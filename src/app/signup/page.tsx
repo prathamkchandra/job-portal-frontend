@@ -12,7 +12,7 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('candidate');
   const [skills, setSkills] = useState('');
-  const [resumeUrl, setResumeUrl] = useState('');
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { setUser } = useAuth();
@@ -24,6 +24,17 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      let resumeUrl = '';
+      if (role === 'candidate' && resumeFile) {
+        // Convert PDF file to base64
+        resumeUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(resumeFile);
+        });
+      }
+
       const response = await apiClient.signup({
         email,
         password,
@@ -36,6 +47,16 @@ export default function SignupPage() {
       setError(err.response?.data?.message || 'Signup failed. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResumeFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type === 'application/pdf') {
+      setResumeFile(file);
+    } else {
+      setError('Please select a PDF file.');
+      setResumeFile(null);
     }
   };
 
@@ -122,18 +143,20 @@ export default function SignupPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="resumeUrl" className="block text-sm font-medium text-gray-700">
-                    Resume URL
+                  <label htmlFor="resumeFile" className="block text-sm font-medium text-gray-700">
+                    Resume (PDF)
                   </label>
                   <input
-                    id="resumeUrl"
-                    name="resumeUrl"
-                    type="url"
+                    id="resumeFile"
+                    name="resumeFile"
+                    type="file"
+                    accept=".pdf,application/pdf"
                     className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="https://example.com/resume.pdf"
-                    value={resumeUrl}
-                    onChange={(e) => setResumeUrl(e.target.value)}
+                    onChange={handleResumeFileChange}
                   />
+                  {resumeFile && (
+                    <p className="mt-1 text-xs text-green-600">✓ {resumeFile.name} selected</p>
+                  )}
                 </div>
               </>
             )}

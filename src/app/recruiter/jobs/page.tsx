@@ -4,19 +4,22 @@ import { useEffect, useState } from 'react';
 import { apiClient } from '@/lib/api';
 import { ProtectedRoute } from '@/components/protected-route';
 import { Job } from '@/lib/types';
+import { useAuth } from '@/lib/auth-context';
 import Link from 'next/link';
 
 export default function RecruiterJobsPage() {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        // In a real app, you'd have an endpoint to get recruiter's own jobs
-        const data = await apiClient.getJobs();
-        setJobs(data);
+        // Get all jobs and filter by current recruiter
+        const allJobs = await apiClient.getJobs();
+        const recruiterJobs = allJobs.filter((job: Job) => job.recruiterId === user?.id);
+        setJobs(recruiterJobs);
       } catch (err: any) {
         setError(err.response?.data?.message || 'Failed to load jobs');
       } finally {
@@ -24,8 +27,10 @@ export default function RecruiterJobsPage() {
       }
     };
 
-    fetchJobs();
-  }, []);
+    if (user?.id) {
+      fetchJobs();
+    }
+  }, [user?.id]);
 
   const handleDelete = async (jobId: number) => {
     if (!confirm('Are you sure you want to delete this job?')) return;

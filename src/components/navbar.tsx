@@ -16,62 +16,83 @@ export function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="font-bold text-xl text-blue-600">
+    <nav className="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-100">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-sm font-semibold text-blue-700"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white font-bold">
+                JP
+              </span>
               JobPortal
             </Link>
+            <div className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+              <Link href="/#jobs" className="hover:text-blue-700 transition-colors">
+                Jobs
+              </Link>
+              <Link href="/#companies" className="hover:text-blue-700 transition-colors">
+                Companies
+              </Link>
+              <Link href="/#services" className="hover:text-blue-700 transition-colors">
+                Services
+              </Link>
+              <Link href="/recruiter" className="hover:text-blue-700 transition-colors">
+                For Employers
+              </Link>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {user ? (
               <>
-                <span className="text-gray-700">
-                  {user.email} <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">{user.role}</span>
+                <span className="hidden sm:inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-sm text-slate-700">
+                  <span className="font-semibold">{user.email}</span>
+                  <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 capitalize">
+                    {user.role}
+                  </span>
                 </span>
 
                 {user.role === 'candidate' && (
-                  <Link href="/jobs" className="text-blue-600 hover:text-blue-800">
-                    Jobs
+                  <Link
+                    href="/dashboard"
+                    className="hidden sm:inline-flex rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
+                  >
+                    Dashboard
                   </Link>
                 )}
 
                 {user.role === 'recruiter' && (
-                  <>
-                    <Link href="/recruiter/jobs" className="text-blue-600 hover:text-blue-800">
-                      My Jobs
-                    </Link>
-                    <Link href="/recruiter/post-job" className="text-blue-600 hover:text-blue-800">
-                      Post Job
-                    </Link>
-                  </>
-                )}
-
-                {user.role === 'candidate' && (
-                  <Link href="/dashboard" className="text-blue-600 hover:text-blue-800">
-                    Dashboard
+                  <Link
+                    href="/recruiter/post-job"
+                    className="hidden sm:inline-flex rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-200 hover:text-blue-700"
+                  >
+                    Post a Job
                   </Link>
                 )}
 
                 <button
                   onClick={handleLogout}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  className="rounded-full bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:shadow-md transition-shadow"
                 >
                   Logout
                 </button>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-blue-600 hover:text-blue-800">
+                <Link
+                  href="/login"
+                  className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:border-blue-300 hover:text-blue-700"
+                >
                   Login
                 </Link>
                 <Link
                   href="/signup"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  className="rounded-full bg-gradient-to-r from-amber-500 to-rose-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:shadow-md transition-shadow"
                 >
-                  Sign Up
+                  Register
                 </Link>
               </>
             )}
